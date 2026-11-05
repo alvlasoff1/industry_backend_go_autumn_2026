@@ -21,11 +21,12 @@ func NewLRUCache[K comparable, V any](capacity int) *LRUCache[K, V] {
 		capacity: capacity,
 		ll:       list.New(),
 		items:    make(map[K]*list.Element, capacity),
+		mu:       sync.RWMutex{},
 	}
 }
 func (c *LRUCache[K, V]) Get(key K) (value V, ok bool) {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	if c.capacity <= 0 {
 		return *new(V), false
 	}
